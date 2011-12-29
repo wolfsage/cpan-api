@@ -159,8 +159,12 @@ extends 'ElasticSearchX::Model::Document::Set';
 sub find_depending_on {
     my ( $self, $modules ) = @_;
     return $self->filter(
-        {   or => [
-                map { { term => { 'release.dependency.module' => $_ } } } @$modules
+        {   and => [
+                { term => { status                 => 'latest' } },
+                {   or => [
+                        map { { term => { 'release.dependency.module' => $_ } } } @$modules
+                    ]
+                }
             ]
         }
     );
